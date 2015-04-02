@@ -43,15 +43,15 @@ import java.util.concurrent.ConcurrentSkipListMap;
  * has same attributes as ConcurrentSkipListSet: e.g. tolerant of concurrent
  * get and set and won't throw ConcurrentModificationException when iterating.
  */
-@InterfaceAudience.Private
+//@InterfaceAudience.Private
 public class KeyValueSkipListSet implements NavigableSet<KeyValue> {
   private final ConcurrentNavigableMap<KeyValue, KeyValue> delegatee;
 
-  KeyValueSkipListSet(final KeyValue.KVComparator c) {
+  public KeyValueSkipListSet(final KeyValue.KVComparator c) {
     this.delegatee = new ConcurrentSkipListMap<KeyValue, KeyValue>(c);
   }
 
-  KeyValueSkipListSet(final ConcurrentNavigableMap<KeyValue, KeyValue> m) {
+  public KeyValueSkipListSet(final ConcurrentNavigableMap<KeyValue, KeyValue> m) {
     this.delegatee = m;
   }
 
