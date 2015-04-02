@@ -19,6 +19,9 @@
 
 package org.apache.hadoop.hbase.regionserver;
 
+import ict.org.apache.hadoop.hbase.regionserver.ICTKeyValueSkipListSetImplementation;
+import ict.org.apache.hadoop.hbase.regionserver.OriginalKeyValueSkipListSetImplementation;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.rmi.UnexpectedException;
@@ -71,7 +74,8 @@ public class MemStore implements HeapSize {
   private static final boolean USEMSLAB_DEFAULT = true;
 
   private Configuration conf;
-
+  private boolean originalDataStruct = true;
+  
   // MemStore.  Use a KeyValueSkipListSet rather than SkipListSet because of the
   // better semantics.  The Map will overwrite if passed a key it already had
   // whereas the Set will not add new KV if key is same though value might be
@@ -113,8 +117,14 @@ public class MemStore implements HeapSize {
                   final KeyValue.KVComparator c) {
     this.conf = conf;
     this.comparator = c;
-    this.kvset = new KeyValueSkipListSet(c);
-    this.snapshot = new KeyValueSkipListSet(c);
+    this.originalDataStruct = conf.getBoolean("hbase.memstore.datastruct.original", true);
+    if(originalDataStruct){
+    	this.kvset = new OriginalKeyValueSkipListSetImplementation(c);
+    	this.snapshot = new OriginalKeyValueSkipListSetImplementation(c);
+    }else{
+    	this.kvset = new ICTKeyValueSkipListSetImplementation(c);
+    	this.snapshot = new ICTKeyValueSkipListSetImplementation(c);
+    }
     timeRangeTracker = new TimeRangeTracker();
     snapshotTimeRangeTracker = new TimeRangeTracker();
     this.size = new AtomicLong(DEEP_OVERHEAD);
@@ -152,7 +162,11 @@ public class MemStore implements HeapSize {
       if (!this.kvset.isEmpty()) {
         this.snapshotSize = keySize();
         this.snapshot = this.kvset;
-        this.kvset = new KeyValueSkipListSet(this.comparator);
+        if(this.originalDataStruct){
+        	this.kvset = new OriginalKeyValueSkipListSetImplementation(this.comparator);
+        }else{
+        	this.kvset = new ICTKeyValueSkipListSetImplementation(this.comparator);
+        }
         this.snapshotTimeRangeTracker = this.timeRangeTracker;
         this.timeRangeTracker = new TimeRangeTracker();
         // Reset heap to not include any keys
@@ -207,7 +221,11 @@ public class MemStore implements HeapSize {
     // OK. Passed in snapshot is same as current snapshot.  If not-empty,
     // create a new snapshot and let the old one go.
     if (!ss.isEmpty()) {
-      this.snapshot = new KeyValueSkipListSet(this.comparator);
+    	if(this.originalDataStruct){
+    		this.snapshot = new ICTKeyValueSkipListSetImplementation(this.comparator);
+    	}else{
+    		this.snapshot = new OriginalKeyValueSkipListSetImplementation(this.comparator);
+    	}
       this.snapshotTimeRangeTracker = new TimeRangeTracker();
     }
     this.snapshotSize = 0;

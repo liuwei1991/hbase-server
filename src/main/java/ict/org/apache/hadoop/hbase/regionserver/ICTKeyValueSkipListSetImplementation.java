@@ -15,7 +15,7 @@ import org.apache.hadoop.hbase.KeyValue.KVComparator;
 import org.apache.hadoop.hbase.regionserver.KeyValueSkipListSet;
 import org.apache.hadoop.hbase.util.Bytes;
 
-public class ICTKeyValueSkipListSet implements NavigableSet<KeyValue> {
+public class ICTKeyValueSkipListSetImplementation extends KeyValueSkipListSet {
 	public Node rootNode;
 	private byte[] family = Bytes.toBytes("f1");
 	private int chunkSize = 8;
@@ -33,21 +33,21 @@ public class ICTKeyValueSkipListSet implements NavigableSet<KeyValue> {
 		}
 	};
 
-	public ICTKeyValueSkipListSet(final Comparator c, final int chunkSize) {
+	public ICTKeyValueSkipListSetImplementation(final Comparator c, final int chunkSize) {
 		this.c = c;
 		this.chunkSize = chunkSize;
 		rootNode = new Node();
 		rootNode.setNextLayer(new ConcurrentSkipListMap<String, Node>(c));
 	}
 
-	ICTKeyValueSkipListSet(final KeyValue.KVComparator cc) {
+	public ICTKeyValueSkipListSetImplementation(final KeyValue.KVComparator cc) {
 		this.chunkSize = chunkSize;
 		rootNode = new Node();
 		rootNode.setNextLayer(new ConcurrentSkipListMap<String, Node>(c));
 		this.cc = cc;
 	}
 
-	ICTKeyValueSkipListSet(final ConcurrentNavigableMap<KeyValue, KeyValue> m) {
+	ICTKeyValueSkipListSetImplementation(final ConcurrentNavigableMap<KeyValue, KeyValue> m) {
 		this.cc = (KVComparator) m.comparator();
 		this.chunkSize = chunkSize;
 		rootNode = new Node();
