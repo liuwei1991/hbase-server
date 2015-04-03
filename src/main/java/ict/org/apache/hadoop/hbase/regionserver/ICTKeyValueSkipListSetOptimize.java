@@ -41,7 +41,7 @@ public class ICTKeyValueSkipListSetOptimize {
 
 	public NavigableSet<KeyValue> headSet(final KeyValue toElement,
 			boolean inclusive) {
-		return new ICTKeyValueSkipListSetImplementation(this.delegatee.headMap(toElement,
+		return new ICTKeyValueSkipListSet(this.delegatee.headMap(toElement,
 				inclusive));
 	}
 
@@ -55,7 +55,7 @@ public class ICTKeyValueSkipListSetOptimize {
 
 	public NavigableSet<KeyValue> tailSet(KeyValue fromElement,
 			boolean inclusive) {
-		return new ICTKeyValueSkipListSetImplementation(this.delegatee.tailMap(fromElement,
+		return new ICTKeyValueSkipListSet(this.delegatee.tailMap(fromElement,
 				inclusive));
 	}
 

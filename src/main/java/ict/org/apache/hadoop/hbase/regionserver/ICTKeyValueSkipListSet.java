@@ -15,7 +15,7 @@ import org.apache.hadoop.hbase.KeyValue.KVComparator;
 import org.apache.hadoop.hbase.regionserver.KeyValueSkipListSet;
 import org.apache.hadoop.hbase.util.Bytes;
 
-public class ICTKeyValueSkipListSetImplementation extends KeyValueSkipListSet {
+public class ICTKeyValueSkipListSet extends KeyValueSkipListSet {
 	public Node rootNode;
 	private byte[] family = Bytes.toBytes("f1");
 	private int chunkSize = 8;
@@ -33,21 +33,21 @@ public class ICTKeyValueSkipListSetImplementation extends KeyValueSkipListSet {
 		}
 	};
 
-	public ICTKeyValueSkipListSetImplementation(final Comparator c, final int chunkSize) {
+	public ICTKeyValueSkipListSet(final Comparator c, final int chunkSize) {
 		this.c = c;
 		this.chunkSize = chunkSize;
 		rootNode = new Node();
 		rootNode.setNextLayer(new ConcurrentSkipListMap<String, Node>(c));
 	}
 
-	public ICTKeyValueSkipListSetImplementation(final KeyValue.KVComparator cc) {
+	public ICTKeyValueSkipListSet(final KeyValue.KVComparator cc) {
 		this.chunkSize = chunkSize;
 		rootNode = new Node();
 		rootNode.setNextLayer(new ConcurrentSkipListMap<String, Node>(c));
 		this.cc = cc;
 	}
 
-	ICTKeyValueSkipListSetImplementation(final ConcurrentNavigableMap<KeyValue, KeyValue> m) {
+	ICTKeyValueSkipListSet(final ConcurrentNavigableMap<KeyValue, KeyValue> m) {
 		this.cc = (KVComparator) m.comparator();
 		this.chunkSize = chunkSize;
 		rootNode = new Node();
@@ -109,7 +109,7 @@ public class ICTKeyValueSkipListSetImplementation extends KeyValueSkipListSet {
 		if (node == null || !node.isValue()) {
 			return null;
 		} else {
-			NavigableSet<KeyValue> result = new KeyValueSkipListSet(cc);
+			NavigableSet<KeyValue> result = new OriginalKeyValueSkipListSet(cc);
 			this.putAllResult(result, key, node.getValue());
 			return result;
 		}
@@ -177,7 +177,7 @@ public class ICTKeyValueSkipListSetImplementation extends KeyValueSkipListSet {
 	public NavigableSet<KeyValue> headSet(final KeyValue toElement,
 			boolean inclusive) {
 		// Less or equal-less than the toElement.
-		NavigableSet<KeyValue> result = new KeyValueSkipListSet(cc);
+		NavigableSet<KeyValue> result = new OriginalKeyValueSkipListSet(cc);
 		this.scan(result, null, toElement.getKeyString(), this.rootNode, 0, "");
 		return result;
 	}
@@ -188,7 +188,7 @@ public class ICTKeyValueSkipListSetImplementation extends KeyValueSkipListSet {
 
 	public NavigableSet<KeyValue> tailSet(KeyValue fromElement,
 			boolean inclusive) {
-		NavigableSet<KeyValue> result = new KeyValueSkipListSet(cc);
+		NavigableSet<KeyValue> result = new OriginalKeyValueSkipListSet(cc);
 		this.scan(result, fromElement.getKeyString(), null, this.rootNode, 0, "");
 		return result;
 	}
@@ -276,7 +276,7 @@ public class ICTKeyValueSkipListSetImplementation extends KeyValueSkipListSet {
 
 	// From hbtree
 	public NavigableSet<KeyValue> scan(String fromKey, String toKey) {
-		NavigableSet<KeyValue> result = new KeyValueSkipListSet(cc);
+		NavigableSet<KeyValue> result = new OriginalKeyValueSkipListSet(cc);
 		if(fromKey!=null && fromKey.length()!=0 && fromKey.equals(toKey)){
 			this.get(fromKey);
 		}else{
@@ -389,7 +389,7 @@ public class ICTKeyValueSkipListSetImplementation extends KeyValueSkipListSet {
 	
 	public Iterator<KeyValue> iterator() {
 		// search all.
-		NavigableSet<KeyValue> result = new KeyValueSkipListSet(cc);
+		NavigableSet<KeyValue> result = new OriginalKeyValueSkipListSet(cc);
 		this.scanAll(result, this.rootNode, "");
 
 		return result.iterator();
@@ -398,7 +398,7 @@ public class ICTKeyValueSkipListSetImplementation extends KeyValueSkipListSet {
 	// not necessary.
 	public Iterator<KeyValue> descendingIterator() {
 		// return this.delegatee.descendingMap().values().iterator();
-		NavigableSet<KeyValue> result = new KeyValueSkipListSet(cc);
+		NavigableSet<KeyValue> result = new OriginalKeyValueSkipListSet(cc);
 		this.scanAll(result, this.rootNode, "");
 
 		return result.descendingIterator();

@@ -19,8 +19,8 @@
 
 package org.apache.hadoop.hbase.regionserver;
 
-import ict.org.apache.hadoop.hbase.regionserver.ICTKeyValueSkipListSetImplementation;
-import ict.org.apache.hadoop.hbase.regionserver.OriginalKeyValueSkipListSetImplementation;
+import ict.org.apache.hadoop.hbase.regionserver.ICTKeyValueSkipListSet;
+import ict.org.apache.hadoop.hbase.regionserver.OriginalKeyValueSkipListSet;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -119,11 +119,11 @@ public class MemStore implements HeapSize {
     this.comparator = c;
     this.originalDataStruct = conf.getBoolean("hbase.memstore.datastruct.original", true);
     if(originalDataStruct){
-    	this.kvset = new OriginalKeyValueSkipListSetImplementation(c);
-    	this.snapshot = new OriginalKeyValueSkipListSetImplementation(c);
+    	this.kvset = new OriginalKeyValueSkipListSet(c);
+    	this.snapshot = new OriginalKeyValueSkipListSet(c);
     }else{
-    	this.kvset = new ICTKeyValueSkipListSetImplementation(c);
-    	this.snapshot = new ICTKeyValueSkipListSetImplementation(c);
+    	this.kvset = new ICTKeyValueSkipListSet(c);
+    	this.snapshot = new ICTKeyValueSkipListSet(c);
     }
     timeRangeTracker = new TimeRangeTracker();
     snapshotTimeRangeTracker = new TimeRangeTracker();
@@ -163,9 +163,9 @@ public class MemStore implements HeapSize {
         this.snapshotSize = keySize();
         this.snapshot = this.kvset;
         if(this.originalDataStruct){
-        	this.kvset = new OriginalKeyValueSkipListSetImplementation(this.comparator);
+        	this.kvset = new OriginalKeyValueSkipListSet(this.comparator);
         }else{
-        	this.kvset = new ICTKeyValueSkipListSetImplementation(this.comparator);
+        	this.kvset = new ICTKeyValueSkipListSet(this.comparator);
         }
         this.snapshotTimeRangeTracker = this.timeRangeTracker;
         this.timeRangeTracker = new TimeRangeTracker();
@@ -222,9 +222,9 @@ public class MemStore implements HeapSize {
     // create a new snapshot and let the old one go.
     if (!ss.isEmpty()) {
     	if(this.originalDataStruct){
-    		this.snapshot = new ICTKeyValueSkipListSetImplementation(this.comparator);
+    		this.snapshot = new ICTKeyValueSkipListSet(this.comparator);
     	}else{
-    		this.snapshot = new OriginalKeyValueSkipListSetImplementation(this.comparator);
+    		this.snapshot = new OriginalKeyValueSkipListSet(this.comparator);
     	}
       this.snapshotTimeRangeTracker = new TimeRangeTracker();
     }

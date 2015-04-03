@@ -11,17 +11,17 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.regionserver.KeyValueSkipListSet;
 
-public class OriginalKeyValueSkipListSetImplementation extends
+public class OriginalKeyValueSkipListSet extends
 		KeyValueSkipListSet {
 
 	private final ConcurrentNavigableMap<KeyValue, KeyValue> delegatee;
 
-	public OriginalKeyValueSkipListSetImplementation(
+	public OriginalKeyValueSkipListSet(
 			final KeyValue.KVComparator c) {
 		this.delegatee = new ConcurrentSkipListMap<KeyValue, KeyValue>(c);
 	}
 
-	public OriginalKeyValueSkipListSetImplementation(
+	public OriginalKeyValueSkipListSet(
 			final ConcurrentNavigableMap<KeyValue, KeyValue> m) {
 		this.delegatee = m;
 	}
@@ -48,7 +48,7 @@ public class OriginalKeyValueSkipListSetImplementation extends
 
 	public NavigableSet<KeyValue> headSet(final KeyValue toElement,
 			boolean inclusive) {
-		return new OriginalKeyValueSkipListSetImplementation(this.delegatee.headMap(toElement,
+		return new OriginalKeyValueSkipListSet(this.delegatee.headMap(toElement,
 				inclusive));
 	}
 
@@ -87,7 +87,7 @@ public class OriginalKeyValueSkipListSetImplementation extends
 
 	public NavigableSet<KeyValue> tailSet(KeyValue fromElement,
 			boolean inclusive) {
-		return new OriginalKeyValueSkipListSetImplementation(this.delegatee.tailMap(fromElement,
+		return new OriginalKeyValueSkipListSet(this.delegatee.tailMap(fromElement,
 				inclusive));
 	}
 
