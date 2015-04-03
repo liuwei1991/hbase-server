@@ -19,6 +19,7 @@
 package org.apache.hadoop.hbase.regionserver;
 
 import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.KeyValue.KVComparator;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -42,6 +43,14 @@ import java.util.SortedSet;
  */
 //@InterfaceAudience.Private
 public class KeyValueSkipListSet implements NavigableSet<KeyValue> {
+
+	public KeyValueSkipListSet() {
+		
+	}
+	
+	public KeyValueSkipListSet(KVComparator comparator) {
+		
+	}
 
 	public KeyValue get(KeyValue kv) {
 		return null;
